@@ -1,0 +1,23 @@
+body {
+  background-color: white;
+  place-items:unset;
+}
+
+.container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+}
+
+.title {
+  font-size: 32px;
+  font-weight: bold;
+  margin-bottom: 10px;
+  color: black;
+}
+
+.description {
+  font-size: 18px;
+  color: #555;
+  margin-bottom: 20px;
+}
