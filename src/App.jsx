@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Options from './components/Options/Options';
 import Feedback from './components/Feedback/Feedback';
 import Notification from './components/Notification/Notification';
@@ -6,11 +6,16 @@ import styles from './App.module.css';
 import Description from './components/Description/Description';
 
 function App() {
-  const [feedback, setFeedback] = useState({
-    good: 0,
-    neutral: 0,
-    bad: 0,
+  const [feedback, setFeedback] = useState(() => {
+    const storedFeedback = localStorage.getItem('feedback');
+    return storedFeedback
+      ? JSON.parse(storedFeedback)
+      : { good: 0, neutral: 0, bad: 0 };
   });
+
+  useEffect(() => {
+    localStorage.setItem('feedback', JSON.stringify(feedback));
+  }, [feedback]);
 
   const handleFeedback = (type) => {
     setFeedback((prev) => ({
@@ -29,31 +34,31 @@ function App() {
 
   const totalFeedback = feedback.good + feedback.neutral + feedback.bad;
 
-  const positiveFeedback = feedback.good + feedback.bad > 0
-    ? Math.round((feedback.good / (feedback.good + feedback.bad)) * 100)
+  const positivePercentage = totalFeedback > 0
+    ? Math.round((feedback.good / totalFeedback) * 100)
     : 0;
 
   return (
-  <div className={styles.container}>
-    <Description /> 
-    <Options
-      onLeaveFeedback={handleFeedback}
-      onReset={resetFeedback}
-      total={totalFeedback}
-    />
-    {totalFeedback > 0 ? (
-      <Feedback
-        good={feedback.good}
-        neutral={feedback.neutral}
-        bad={feedback.bad}
+    <div className={styles.container}>
+      <Description />
+      <Options
+        onLeaveFeedback={handleFeedback}
+        onReset={resetFeedback}
         total={totalFeedback}
-        positive={positiveFeedback}
       />
-    ) : (
-      <Notification message="No feedback yet" />
-    )}
-  </div>
-);
+      {totalFeedback > 0 ? (
+        <Feedback
+          good={feedback.good}
+          neutral={feedback.neutral}
+          bad={feedback.bad}
+          total={totalFeedback}
+          positive={positivePercentage}
+        />
+      ) : (
+        <Notification message="No feedback yet" />
+      )}
+    </div>
+  );
 }
 
 export default App;
